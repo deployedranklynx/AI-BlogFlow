@@ -58,7 +58,7 @@
   "websites": [
     {
       "id": 1,
-      "name": "SaaS Growth Journal",
+      "name": "Updated Site",
       "domain": "https://saasgrowthjournal.com",
       "wp_url": "https://saasgrowthjournal.com",
       "wp_username": "editor_bot",
@@ -75,7 +75,8 @@
       "status": "active",
       "connection_status": "connected",
       "last_connection_test": "2026-09-20T02:11:50.341Z",
-      "created_at": "2026-09-05T02:11:43.576Z"
+      "created_at": "2026-09-05T02:11:43.576Z",
+      "updated_at": "2026-09-20T06:18:08.835Z"
     },
     {
       "id": 2,
@@ -97,6 +98,50 @@
       "connection_status": "connected",
       "last_connection_test": "2026-09-20T02:11:43.576Z",
       "created_at": "2026-09-13T02:11:43.576Z"
+    },
+    {
+      "id": 3,
+      "name": "Test Site",
+      "domain": "https://test.com",
+      "wp_url": "https://test.com",
+      "wp_username": "admin",
+      "wp_app_password_masked": "•••• •••• •••• mnop",
+      "default_category": "General",
+      "default_author": "Admin",
+      "publishing_mode": "APPROVAL",
+      "timezone": "UTC",
+      "content_language": "en-US",
+      "target_country": "US",
+      "niche": "General Technology",
+      "brand_voice": "Professional, authoritative, actionable",
+      "default_article_length": 1800,
+      "default_ai_instructions": "",
+      "status": "active",
+      "connection_status": "connected",
+      "last_connection_test": "2026-09-20T06:17:34.894Z",
+      "created_at": "2026-09-20T06:17:34.894Z"
+    },
+    {
+      "id": 6,
+      "name": "AI Tech Hub",
+      "domain": "https://aitechhub.io",
+      "wp_url": "https://aitechhub.io",
+      "wp_username": "editor_bot",
+      "wp_app_password_masked": "•••• •••• •••• mnop",
+      "default_category": "General",
+      "default_author": "Admin",
+      "publishing_mode": "APPROVAL",
+      "timezone": "UTC",
+      "content_language": "en-US",
+      "target_country": "US",
+      "niche": "Artificial Intelligence",
+      "brand_voice": "Authoritative, clear",
+      "default_article_length": 1800,
+      "default_ai_instructions": "",
+      "status": "active",
+      "connection_status": "connected",
+      "last_connection_test": "2026-09-20T06:22:01.482Z",
+      "created_at": "2026-09-20T06:22:01.482Z"
     }
   ],
   "keywords": [
@@ -248,6 +293,87 @@
     }
   ],
   "activityLogs": [
+    {
+      "id": 17,
+      "user": "Site Administrator",
+      "action": "Website Deleted",
+      "website": "MySite",
+      "status": "warning",
+      "details": "Removed website \"MySite\"",
+      "timestamp": "2026-09-20T06:22:13.476Z"
+    },
+    {
+      "id": 16,
+      "user": "Site Administrator",
+      "action": "Website Deleted",
+      "website": "Test",
+      "status": "warning",
+      "details": "Removed website \"Test\"",
+      "timestamp": "2026-09-20T06:22:13.461Z"
+    },
+    {
+      "id": 15,
+      "user": "Site Administrator",
+      "action": "Website Added",
+      "website": "AI Tech Hub",
+      "status": "success",
+      "details": "Added website \"AI Tech Hub\" (https://aitechhub.io)",
+      "timestamp": "2026-09-20T06:22:01.483Z"
+    },
+    {
+      "id": 14,
+      "user": "Site Administrator",
+      "action": "Website Added",
+      "website": "MySite",
+      "status": "success",
+      "details": "Added website \"MySite\" (https://mysite.com)",
+      "timestamp": "2026-09-20T06:19:20.748Z"
+    },
+    {
+      "id": 13,
+      "user": "Site Administrator",
+      "action": "Website Updated",
+      "website": "Updated Site",
+      "status": "success",
+      "details": "Updated settings for \"Updated Site\"",
+      "timestamp": "2026-09-20T06:18:08.836Z"
+    },
+    {
+      "id": 12,
+      "user": "Site Administrator",
+      "action": "Emergency Stop Toggled",
+      "website": "Global",
+      "status": "success",
+      "details": "Emergency STOP switch DEACTIVATED",
+      "timestamp": "2026-09-20T06:17:52.137Z"
+    },
+    {
+      "id": 11,
+      "user": "Site Administrator",
+      "action": "Website Added",
+      "website": "Test",
+      "status": "success",
+      "details": "Added website \"Test\" (https://test.com)",
+      "timestamp": "2026-09-20T06:17:49.486Z"
+    },
+    {
+      "id": 10,
+      "user": "Site Administrator",
+      "action": "Emergency Stop Toggled",
+      "website": "Global",
+      "status": "warning",
+      "details": "Emergency STOP switch ACTIVATED",
+      "timestamp": "2026-09-20T06:17:45.877Z"
+    },
+    {
+      "id": 9,
+      "user": "Site Administrator",
+      "action": "Website Added",
+      "website": "Test Site",
+      "status": "success",
+      "details": "Added website \"Test Site\" (https://test.com)",
+      "timestamp": "2026-09-20T06:17:34.895Z"
+    },
     {
       "id": 8,
       "user": "Site Administrator",

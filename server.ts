@@ -13,8 +13,27 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Body parser error handler to prevent HTML responses on malformed JSON
+app.use((err: any, req: Request, res: Response, next: any) => {
+  if (err instanceof SyntaxError && 'body' in err) {
+    return res.status(400).json({ success: false, error: 'Invalid JSON payload received' });
+  }
+  next(err);
+});
+
+// Helper to normalize URLs (auto-prepend https:// if missing, remove trailing slash)
+function normalizeUrl(urlStr: any): string {
+  if (!urlStr || typeof urlStr !== 'string') return '';
+  let trimmed = urlStr.trim();
+  if (!trimmed) return '';
+  if (!/^https?:\/\//i.test(trimmed)) {
+    trimmed = 'https://' + trimmed;
+  }
+  return trimmed.replace(/\/+$/, '');
+}
 
 // Ensure data directory exists
 const DATA_DIR = path.join(__dirname, 'data');
@@ -237,7 +256,17 @@ function readDb() {
   try {
     if (fs.existsSync(DB_FILE)) {
       const raw = fs.readFileSync(DB_FILE, 'utf-8');
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        if (!Array.isArray(parsed.websites)) parsed.websites = [];
+        if (!Array.isArray(parsed.keywords)) parsed.keywords = [];
+        if (!Array.isArray(parsed.articles)) parsed.articles = [];
+        if (!Array.isArray(parsed.activityLogs)) parsed.activityLogs = [];
+        if (!Array.isArray(parsed.aiProviders)) parsed.aiProviders = [];
+        if (!parsed.systemSettings || typeof parsed.systemSettings !== 'object') parsed.systemSettings = {};
+        if (!parsed.currentUser) parsed.currentUser = { id: 1, name: 'Site Administrator', email: 'admin@blogflow.io', role: 'Administrator' };
+        return parsed;
+      }
     }
   } catch (err) {
     console.error('Error reading DB file, resetting to default:', err);
@@ -409,121 +438,159 @@ app.get('/api/dashboard/health', (req: Request, res: Response) => {
 // ==========================================
 // 3. WEBSITE MANAGEMENT ENDPOINTS
 // ==========================================
-app.get('/api/websites', (req: Request, res: Response) => {
-  const db = readDb();
-  res.json({
-    success: true,
-    data: db.websites
-  });
+app.get(['/api/websites', '/api/websites/'], (req: Request, res: Response) => {
+  try {
+    const db = readDb();
+    res.json({
+      success: true,
+      data: db.websites || []
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message || 'Failed to retrieve websites' });
+  }
 });
 
-app.post('/api/websites', (req: Request, res: Response) => {
-  const {
-    name, domain, wp_url, wp_username, wp_app_password,
-    default_category, default_author, publishing_mode,
-    timezone, content_language, target_country,
-    niche, brand_voice, default_article_length, default_ai_instructions
-  } = req.body;
+app.post(['/api/websites', '/api/websites/'], (req: Request, res: Response) => {
+  try {
+    const body = req.body || {};
+    const {
+      name, domain, wp_url, wp_username, wp_app_password,
+      default_category, default_author, publishing_mode,
+      timezone, content_language, target_country,
+      niche, brand_voice, default_article_length, default_ai_instructions
+    } = body;
 
-  if (!name || !domain || !wp_url || !wp_username) {
-    return res.status(400).json({
+    const trimmedName = typeof name === 'string' ? name.trim() : '';
+    const normalizedDomain = normalizeUrl(domain);
+    const normalizedWpUrl = normalizeUrl(wp_url);
+    const trimmedUsername = typeof wp_username === 'string' ? wp_username.trim() : '';
+
+    if (!trimmedName || !normalizedDomain || !normalizedWpUrl || !trimmedUsername) {
+      return res.status(400).json({
+        success: false,
+        error: 'Website name, domain, WordPress URL, and username are required.'
+      });
+    }
+
+    const db = readDb();
+    const nextId = (db.websites && db.websites.length > 0)
+      ? Math.max(...db.websites.map((w: any) => (typeof w.id === 'number' ? w.id : 0))) + 1
+      : 1;
+
+    // Mask sensitive app password safely
+    let maskedPw = '•••• •••• •••• ****';
+    if (wp_app_password && typeof wp_app_password === 'string') {
+      const cleaned = wp_app_password.replace(/\s+/g, '');
+      maskedPw = cleaned.length >= 4
+        ? '•••• •••• •••• ' + cleaned.slice(-4)
+        : '•••• •••• •••• ' + cleaned;
+    }
+
+    const newWebsite = {
+      id: nextId,
+      name: trimmedName,
+      domain: normalizedDomain,
+      wp_url: normalizedWpUrl,
+      wp_username: trimmedUsername,
+      wp_app_password_masked: maskedPw,
+      default_category: (typeof default_category === 'string' && default_category.trim()) ? default_category.trim() : 'General',
+      default_author: (typeof default_author === 'string' && default_author.trim()) ? default_author.trim() : 'Admin',
+      publishing_mode: publishing_mode || 'APPROVAL',
+      timezone: timezone || 'UTC',
+      content_language: content_language || 'en-US',
+      target_country: target_country || 'US',
+      niche: (typeof niche === 'string' && niche.trim()) ? niche.trim() : 'General Technology',
+      brand_voice: (typeof brand_voice === 'string' && brand_voice.trim()) ? brand_voice.trim() : 'Professional, authoritative, actionable',
+      default_article_length: Number(default_article_length) || 1800,
+      default_ai_instructions: typeof default_ai_instructions === 'string' ? default_ai_instructions.trim() : '',
+      status: 'active',
+      connection_status: 'connected',
+      last_connection_test: new Date().toISOString(),
+      created_at: new Date().toISOString()
+    };
+
+    db.websites.push(newWebsite);
+    writeDb(db);
+
+    logActivity('Website Added', newWebsite.name, 'success', `Added website "${newWebsite.name}" (${newWebsite.domain})`);
+
+    res.status(201).json({
+      success: true,
+      message: 'Website added successfully',
+      data: newWebsite
+    });
+  } catch (err: any) {
+    console.error('Error in POST /api/websites:', err);
+    res.status(500).json({
       success: false,
-      error: 'Website name, domain, WordPress URL, and username are required.'
+      error: err.message || 'Internal server error adding website'
     });
   }
-
-  const db = readDb();
-  const nextId = db.websites.length > 0 ? Math.max(...db.websites.map((w: any) => w.id)) + 1 : 1;
-
-  // Mask sensitive app password
-  const maskedPw = wp_app_password ? '•••• •••• •••• ' + wp_app_password.replace(/\s+/g, '').slice(-4) : '•••• •••• •••• ****';
-
-  const newWebsite = {
-    id: nextId,
-    name: name.trim(),
-    domain: domain.trim(),
-    wp_url: wp_url.trim(),
-    wp_username: wp_username.trim(),
-    wp_app_password_masked: maskedPw,
-    default_category: default_category || 'General',
-    default_author: default_author || 'Admin',
-    publishing_mode: publishing_mode || 'APPROVAL',
-    timezone: timezone || 'UTC',
-    content_language: content_language || 'en-US',
-    target_country: target_country || 'US',
-    niche: niche || 'General Technology',
-    brand_voice: brand_voice || 'Professional, authoritative, actionable',
-    default_article_length: Number(default_article_length) || 1800,
-    default_ai_instructions: default_ai_instructions || '',
-    status: 'active',
-    connection_status: 'connected',
-    last_connection_test: new Date().toISOString(),
-    created_at: new Date().toISOString()
-  };
-
-  db.websites.push(newWebsite);
-  writeDb(db);
-
-  logActivity('Website Added', newWebsite.name, 'success', `Added website "${newWebsite.name}" (${newWebsite.domain})`);
-
-  res.status(201).json({
-    success: true,
-    message: 'Website added successfully',
-    data: newWebsite
-  });
 });
 
-app.put('/api/websites/:id', (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const db = readDb();
-  const index = db.websites.findIndex((w: any) => w.id === id);
+app.put(['/api/websites/:id', '/api/websites/:id/'], (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const db = readDb();
+    const index = db.websites.findIndex((w: any) => w.id === id);
 
-  if (index === -1) {
-    return res.status(404).json({ success: false, error: 'Website not found' });
+    if (index === -1) {
+      return res.status(404).json({ success: false, error: 'Website not found' });
+    }
+
+    const current = db.websites[index];
+    const body = req.body || {};
+    const {
+      name, domain, wp_url, wp_username, wp_app_password,
+      default_category, default_author, publishing_mode,
+      timezone, content_language, target_country,
+      niche, brand_voice, default_article_length, default_ai_instructions, status
+    } = body;
+
+    let maskedPw = current.wp_app_password_masked;
+    if (wp_app_password && typeof wp_app_password === 'string' && wp_app_password.trim() !== '') {
+      const cleaned = wp_app_password.replace(/\s+/g, '');
+      maskedPw = cleaned.length >= 4
+        ? '•••• •••• •••• ' + cleaned.slice(-4)
+        : '•••• •••• •••• ' + cleaned;
+    }
+
+    db.websites[index] = {
+      ...current,
+      name: (typeof name === 'string' && name.trim()) ? name.trim() : current.name,
+      domain: domain ? normalizeUrl(domain) : current.domain,
+      wp_url: wp_url ? normalizeUrl(wp_url) : current.wp_url,
+      wp_username: (typeof wp_username === 'string' && wp_username.trim()) ? wp_username.trim() : current.wp_username,
+      wp_app_password_masked: maskedPw,
+      default_category: default_category !== undefined ? default_category : current.default_category,
+      default_author: default_author !== undefined ? default_author : current.default_author,
+      publishing_mode: publishing_mode || current.publishing_mode,
+      timezone: timezone || current.timezone,
+      content_language: content_language || current.content_language,
+      target_country: target_country || current.target_country,
+      niche: niche !== undefined ? niche : current.niche,
+      brand_voice: brand_voice !== undefined ? brand_voice : current.brand_voice,
+      default_article_length: default_article_length ? Number(default_article_length) : current.default_article_length,
+      default_ai_instructions: default_ai_instructions !== undefined ? default_ai_instructions : current.default_ai_instructions,
+      status: status || current.status,
+      updated_at: new Date().toISOString()
+    };
+
+    writeDb(db);
+    logActivity('Website Updated', db.websites[index].name, 'success', `Updated settings for "${db.websites[index].name}"`);
+
+    res.json({
+      success: true,
+      message: 'Website updated successfully',
+      data: db.websites[index]
+    });
+  } catch (err: any) {
+    console.error('Error in PUT /api/websites/:id:', err);
+    res.status(500).json({
+      success: false,
+      error: err.message || 'Internal server error updating website'
+    });
   }
-
-  const current = db.websites[index];
-  const {
-    name, domain, wp_url, wp_username, wp_app_password,
-    default_category, default_author, publishing_mode,
-    timezone, content_language, target_country,
-    niche, brand_voice, default_article_length, default_ai_instructions, status
-  } = req.body;
-
-  let maskedPw = current.wp_app_password_masked;
-  if (wp_app_password && wp_app_password.trim() !== '') {
-    maskedPw = '•••• •••• •••• ' + wp_app_password.replace(/\s+/g, '').slice(-4);
-  }
-
-  db.websites[index] = {
-    ...current,
-    name: name ? name.trim() : current.name,
-    domain: domain ? domain.trim() : current.domain,
-    wp_url: wp_url ? wp_url.trim() : current.wp_url,
-    wp_username: wp_username ? wp_username.trim() : current.wp_username,
-    wp_app_password_masked: maskedPw,
-    default_category: default_category !== undefined ? default_category : current.default_category,
-    default_author: default_author !== undefined ? default_author : current.default_author,
-    publishing_mode: publishing_mode || current.publishing_mode,
-    timezone: timezone || current.timezone,
-    content_language: content_language || current.content_language,
-    target_country: target_country || current.target_country,
-    niche: niche !== undefined ? niche : current.niche,
-    brand_voice: brand_voice !== undefined ? brand_voice : current.brand_voice,
-    default_article_length: default_article_length ? Number(default_article_length) : current.default_article_length,
-    default_ai_instructions: default_ai_instructions !== undefined ? default_ai_instructions : current.default_ai_instructions,
-    status: status || current.status,
-    updated_at: new Date().toISOString()
-  };
-
-  writeDb(db);
-  logActivity('Website Updated', db.websites[index].name, 'success', `Updated settings for "${db.websites[index].name}"`);
-
-  res.json({
-    success: true,
-    message: 'Website updated successfully',
-    data: db.websites[index]
-  });
 });
 
 app.delete('/api/websites/:id', (req: Request, res: Response) => {
@@ -884,6 +951,26 @@ app.get('/api/export/config-example', (req: Request, res: Response) => {
     return res.send(fs.readFileSync(confPath, 'utf-8'));
   }
   res.status(404).json({ success: false, error: 'config.example.php not found' });
+});
+
+// ==========================================
+// API FALLBACKS & ERROR HANDLING
+// ==========================================
+// Catch-all 404 for any unmatched /api route to ensure JSON is ALWAYS returned instead of Vite HTML
+app.all('/api/*', (req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    error: `API route not found: ${req.method} ${req.path}`
+  });
+});
+
+// Global API error handler ensuring errors on /api routes never return HTML
+app.use('/api', (err: any, req: Request, res: Response, next: any) => {
+  console.error('Unhandled API Error:', err);
+  res.status(err.status || 500).json({
+    success: false,
+    error: err.message || 'Internal Server Error'
+  });
 });
 
 // ==========================================
