@@ -1,0 +1,6 @@
+{
+  "name": "AI BlogFlow",
+  "description": "AI-powered blogging automation platform managing multiple WordPress websites, keyword research, topic planning, content generation, and n8n automations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

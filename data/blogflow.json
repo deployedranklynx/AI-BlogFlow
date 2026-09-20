@@ -1,0 +1,324 @@
+{
+  "currentUser": {
+    "id": 1,
+    "name": "Site Administrator",
+    "email": "admin@blogflow.io",
+    "role": "Administrator",
+    "role_id": 1,
+    "status": "active"
+  },
+  "systemSettings": {
+    "app_name": "AI BlogFlow",
+    "daily_ai_budget": 15,
+    "monthly_ai_budget": 300,
+    "max_article_cost": 0.75,
+    "emergency_stop": false,
+    "global_publishing_mode": "APPROVAL",
+    "max_revision_attempts": 3,
+    "n8n_master_secret": "n8n_sec_8f912da4930182bcf",
+    "current_daily_spend": 2.14,
+    "current_monthly_spend": 48.6,
+    "total_api_calls": 312
+  },
+  "aiProviders": [
+    {
+      "id": 1,
+      "name": "gemini",
+      "display_name": "Google Gemini AI",
+      "default_model": "gemini-3.8-flash",
+      "is_enabled": true,
+      "is_default": true,
+      "api_key_masked": "••••••••8eCA",
+      "temperature": 0.7,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "openai",
+      "display_name": "OpenAI (GPT-4o)",
+      "default_model": "gpt-4o-mini",
+      "is_enabled": false,
+      "is_default": false,
+      "api_key_masked": "",
+      "temperature": 0.7,
+      "status": "unconfigured"
+    },
+    {
+      "id": 3,
+      "name": "anthropic",
+      "display_name": "Anthropic Claude",
+      "default_model": "claude-3-5-sonnet",
+      "is_enabled": false,
+      "is_default": false,
+      "api_key_masked": "",
+      "temperature": 0.7,
+      "status": "unconfigured"
+    }
+  ],
+  "websites": [
+    {
+      "id": 1,
+      "name": "SaaS Growth Journal",
+      "domain": "https://saasgrowthjournal.com",
+      "wp_url": "https://saasgrowthjournal.com",
+      "wp_username": "editor_bot",
+      "wp_app_password_masked": "•••• •••• •••• 9b3a",
+      "default_category": "Growth Marketing",
+      "default_author": "Growth Team",
+      "publishing_mode": "APPROVAL",
+      "timezone": "America/New_York",
+      "content_language": "en-US",
+      "target_country": "US",
+      "niche": "B2B SaaS Marketing & Product-Led Growth",
+      "brand_voice": "Analytical, pragmatic, actionable, no-nonsense",
+      "default_article_length": 2200,
+      "status": "active",
+      "connection_status": "connected",
+      "last_connection_test": "2026-09-20T02:11:50.341Z",
+      "created_at": "2026-09-05T02:11:43.576Z"
+    },
+    {
+      "id": 2,
+      "name": "AI Productivity Hub",
+      "domain": "https://aiproductivityhub.io",
+      "wp_url": "https://aiproductivityhub.io",
+      "wp_username": "ai_publisher",
+      "wp_app_password_masked": "•••• •••• •••• 41cf",
+      "default_category": "Workplace AI",
+      "default_author": "Automation Bot",
+      "publishing_mode": "AUTO",
+      "timezone": "UTC",
+      "content_language": "en-US",
+      "target_country": "US",
+      "niche": "AI Tools & Workflow Automation",
+      "brand_voice": "Friendly, tech-savvy, instructional, optimistic",
+      "default_article_length": 1800,
+      "status": "active",
+      "connection_status": "connected",
+      "last_connection_test": "2026-09-20T02:11:43.576Z",
+      "created_at": "2026-09-13T02:11:43.576Z"
+    }
+  ],
+  "keywords": [
+    {
+      "id": 1,
+      "website_id": 1,
+      "keyword": "b2b saas onboarding best practices",
+      "status": "Published",
+      "intent": "informational",
+      "priority": "high",
+      "volume": 2400,
+      "difficulty": 42
+    },
+    {
+      "id": 2,
+      "website_id": 1,
+      "keyword": "customer retention strategies software",
+      "status": "Writing",
+      "intent": "commercial",
+      "priority": "high",
+      "volume": 1900,
+      "difficulty": 51
+    },
+    {
+      "id": 3,
+      "website_id": 1,
+      "keyword": "freemium to paid conversion rate",
+      "status": "Approved",
+      "intent": "informational",
+      "priority": "medium",
+      "volume": 1200,
+      "difficulty": 38
+    },
+    {
+      "id": 4,
+      "website_id": 2,
+      "keyword": "n8n workflow automation for bloggers",
+      "status": "Published",
+      "intent": "informational",
+      "priority": "urgent",
+      "volume": 3600,
+      "difficulty": 29
+    },
+    {
+      "id": 5,
+      "website_id": 2,
+      "keyword": "gemini api content generation php",
+      "status": "Writing",
+      "intent": "informational",
+      "priority": "high",
+      "volume": 1800,
+      "difficulty": 34
+    },
+    {
+      "id": 6,
+      "website_id": 2,
+      "keyword": "best ai writing assistants compared",
+      "status": "Researching",
+      "intent": "commercial",
+      "priority": "medium",
+      "volume": 5400,
+      "difficulty": 68
+    },
+    {
+      "id": 7,
+      "website_id": 2,
+      "keyword": "automated internal link building",
+      "status": "Approved",
+      "intent": "informational",
+      "priority": "medium",
+      "volume": 950,
+      "difficulty": 27
+    }
+  ],
+  "topics": [
+    {
+      "id": 1,
+      "website_id": 1,
+      "title": "The Ultimate Guide to B2B SaaS Onboarding in 2026",
+      "primary_keyword": "b2b saas onboarding best practices",
+      "status": "completed",
+      "content_type": "guide"
+    },
+    {
+      "id": 2,
+      "website_id": 1,
+      "title": "7 Retention Strategies Every SaaS Founder Needs",
+      "primary_keyword": "customer retention strategies software",
+      "status": "in_progress",
+      "content_type": "listicle"
+    },
+    {
+      "id": 3,
+      "website_id": 2,
+      "title": "How to Automate Multi-Site Blogging with n8n and Gemini",
+      "primary_keyword": "n8n workflow automation for bloggers",
+      "status": "completed",
+      "content_type": "how-to"
+    },
+    {
+      "id": 4,
+      "website_id": 2,
+      "title": "Scaling PHP Applications for High-Volume Content Automation",
+      "primary_keyword": "gemini api content generation php",
+      "status": "in_progress",
+      "content_type": "guide"
+    }
+  ],
+  "articles": [
+    {
+      "id": 1,
+      "website_id": 1,
+      "title": "The Ultimate Guide to B2B SaaS Onboarding in 2026",
+      "slug": "b2b-saas-onboarding-best-practices",
+      "status": "published",
+      "word_count": 2340,
+      "published_at": "2026-09-18T02:11:43.576Z",
+      "wp_post_url": "https://saasgrowthjournal.com/b2b-saas-onboarding-best-practices"
+    },
+    {
+      "id": 2,
+      "website_id": 2,
+      "title": "How to Automate Multi-Site Blogging with n8n and Gemini",
+      "slug": "automate-multi-site-blogging-n8n-gemini",
+      "status": "published",
+      "word_count": 2180,
+      "published_at": "2026-09-19T02:11:43.576Z",
+      "wp_post_url": "https://aiproductivityhub.io/automate-multi-site-blogging-n8n-gemini"
+    },
+    {
+      "id": 3,
+      "website_id": 1,
+      "title": "7 Retention Strategies Every SaaS Founder Needs",
+      "slug": "saas-retention-strategies",
+      "status": "quality_review",
+      "word_count": 1950,
+      "published_at": null,
+      "wp_post_url": null
+    },
+    {
+      "id": 4,
+      "website_id": 2,
+      "title": "Automating Content Pipelines with PHP & Google Gemini",
+      "slug": "automating-content-pipelines-php-gemini",
+      "status": "ready_to_publish",
+      "word_count": 1820,
+      "published_at": null,
+      "wp_post_url": null
+    }
+  ],
+  "activityLogs": [
+    {
+      "id": 8,
+      "user": "Site Administrator",
+      "action": "Emergency Stop Toggled",
+      "website": "Global",
+      "status": "success",
+      "details": "Emergency STOP switch DEACTIVATED",
+      "timestamp": "2026-09-20T02:11:57.557Z"
+    },
+    {
+      "id": 7,
+      "user": "Site Administrator",
+      "action": "Emergency Stop Toggled",
+      "website": "Global",
+      "status": "warning",
+      "details": "Emergency STOP switch ACTIVATED",
+      "timestamp": "2026-09-20T02:11:54.855Z"
+    },
+    {
+      "id": 6,
+      "user": "Site Administrator",
+      "action": "WordPress Connection Tested",
+      "website": "SaaS Growth Journal",
+      "status": "success",
+      "details": "WordPress REST API detected at https://saasgrowthjournal.com. Endpoint responded with HTTP 401 (REST API Active).",
+      "timestamp": "2026-09-20T02:11:50.343Z"
+    },
+    {
+      "id": 1,
+      "user": "Site Administrator",
+      "action": "Website Added",
+      "website": "SaaS Growth Journal",
+      "status": "success",
+      "details": "Initial WordPress REST connection established and credentials encrypted",
+      "timestamp": "2026-09-05T02:11:43.576Z"
+    },
+    {
+      "id": 2,
+      "user": "Site Administrator",
+      "action": "Website Added",
+      "website": "AI Productivity Hub",
+      "status": "success",
+      "details": "Added with AUTO publishing mode and Gemini default model",
+      "timestamp": "2026-09-13T02:11:43.576Z"
+    },
+    {
+      "id": 3,
+      "user": "System Automation",
+      "action": "Article Published",
+      "website": "SaaS Growth Journal",
+      "status": "success",
+      "details": "Published \"The Ultimate Guide to B2B SaaS Onboarding in 2026\" via WordPress REST API",
+      "timestamp": "2026-09-18T02:11:43.576Z"
+    },
+    {
+      "id": 4,
+      "user": "System Automation",
+      "action": "Article Published",
+      "website": "AI Productivity Hub",
+      "status": "success",
+      "details": "Auto-published \"How to Automate Multi-Site Blogging with n8n and Gemini\"",
+      "timestamp": "2026-09-19T02:11:43.576Z"
+    },
+    {
+      "id": 5,
+      "user": "Site Administrator",
+      "action": "System Health Check",
+      "website": "All Websites",
+      "status": "success",
+      "details": "Verified database integrity and AI provider connectivity",
+      "timestamp": "2026-09-20T02:11:43.576Z"
+    }
+  ]
+}
